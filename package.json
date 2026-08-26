@@ -1,17 +1,33 @@
 {
   "name": "yt-downloader",
   "version": "1.0.0",
-  "description": "Self-hosted YouTube downloader - works on laptop + iPhone, saves to Gallery/Downloads, CapCut ready",
+  "description": "Self-hosted YouTube downloader — laptop + iPhone, CapCut ready",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "start": "npm run build && node server.js",
     "tunnel": "node tunnel.js",
     "tunnel:lt": "npx localtunnel --port 8787",
     "tunnel:cf": "cloudflared tunnel --url http://localhost:8787"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "axios": "^1.7.7",
+    "@tanstack/react-query": "^5.59.0",
+    "lucide-react": "^0.451.0",
+    "zod": "^3.23.8",
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
   }
 }
