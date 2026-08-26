@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8787;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // ---- Cache for video info (avoid double-fetch, faster UI) ----
 const infoCache = new Map(); // url -> {data, ts}
@@ -227,6 +227,11 @@ app.get('/api/download', async (req, res) => {
 });
 
 app.get('/api/health', (req, res) => res.json({ ok: true, ytDlp: true, cache: infoCache.size, bgutil: true }));
+
+// SPA fallback — serve the built index.html for any non-API route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n✓ Server running (OPTIMIZED)`);
