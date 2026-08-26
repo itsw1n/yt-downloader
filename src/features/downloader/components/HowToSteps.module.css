@@ -1,0 +1,58 @@
+.section {
+  margin-bottom: var(--space-4);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-primary);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.stepNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  min-width: 1.75rem;
+  border-radius: 50%;
+  background-color: var(--color-muted);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.stepText {
+  font-size: var(--font-size-sm);
+  color: var(--color-muted-foreground);
+  line-height: 1.4;
+}

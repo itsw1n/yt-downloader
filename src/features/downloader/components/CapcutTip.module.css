@@ -1,0 +1,23 @@
+.tip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-success);
+  background-color: var(--color-success-bg);
+  border-radius: var(--radius-md);
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-success);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.text {
+  font-size: var(--font-size-sm);
+  color: var(--color-success);
+  line-height: 1.4;
+}

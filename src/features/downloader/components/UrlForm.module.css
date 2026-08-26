@@ -1,0 +1,44 @@
+.wrap {
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-muted-foreground);
+  pointer-events: none;
+}
+
+.inputWithIcon {
+  padding-left: 2.5rem;
+  padding-right: 3rem;
+}
+
+.pasteBtn {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-muted);
+  color: var(--color-muted-foreground);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  cursor: pointer;
+  transition: color var(--transition-base);
+}
+
+.pasteBtn:hover {
+  color: var(--color-foreground);
+}
+
+.submit {
+  margin-top: var(--space-3);
+}
