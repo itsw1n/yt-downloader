@@ -1,0 +1,17 @@
+{
+  "name": "yt-downloader",
+  "version": "1.0.0",
+  "description": "Self-hosted YouTube downloader - works on laptop + iPhone, saves to Gallery/Downloads, CapCut ready",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "tunnel": "node tunnel.js",
+    "tunnel:lt": "npx localtunnel --port 8787",
+    "tunnel:cf": "cloudflared tunnel --url http://localhost:8787"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}
