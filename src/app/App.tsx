@@ -85,8 +85,16 @@ export function App() {
       <footer className={styles.footer}>
         Self-hosted • No ads • No tracking • Uses yt-dlp
         <br />
-        For personal use — respect creators &amp; copyright
+        For personal use. Made by{" "}
+        <a
+          href="https://github.com/itsw1n"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.link}
+        >
+          itsw1n
+        </a>
       </footer>
     </div>
-  )
+  );
 }
