@@ -12,6 +12,30 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 8787;
 
+// ---- URL source detection ----
+function isYouTube(u) {
+  return u.includes('youtube.com') || u.includes('youtu.be');
+}
+function isTikTok(u) {
+  return u.includes('tiktok.com') || /tiktok\./.test(u);
+}
+
+// ---- Optional cookies (helps when a site blocks the server's IP) ----
+// Set YTDLP_COOKIES to a Netscape/Mozilla cookie file (exported while logged
+// in). Leave unset for normal operation.
+const YTDLP_COOKIES = process.env.YTDLP_COOKIES || '';
+function cookieArg() {
+  return YTDLP_COOKIES ? ['--cookies', YTDLP_COOKIES] : [];
+}
+
+// TikTok's web extractor is frequently broken by TikTok-side changes; a browser
+// User-Agent is a common workaround that avoids "Unexpected response" errors.
+const TIKTOK_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36';
+function tiktokUaArg(u) {
+  return isTikTok(u) ? ['--user-agent', TIKTOK_USER_AGENT] : [];
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -39,7 +63,7 @@ function getVideoInfo(url) {
   if (cached) return Promise.resolve(cached);
   return new Promise((resolve, reject) => {
     // use fast args: no playlist, no warnings, socket timeout 15s
-    const args = ['--dump-single-json', '--no-playlist', '--no-warnings', '--socket-timeout', '15', url];
+    const args = ['--dump-single-json', '--no-playlist', '--no-warnings', '--socket-timeout', '15', ...tiktokUaArg(url), ...cookieArg(), url];
     const proc = spawn('yt-dlp', args);
     let stdout = '';
     let stderr = '';
@@ -73,15 +97,18 @@ function quickFilename(url, title) {
 app.get('/api/info', async (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).json({ error: 'Missing ?url=' });
-  if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
-    return res.status(400).json({ error: 'Please provide a YouTube link' });
+  if (!isYouTube(url) && !isTikTok(url)) {
+    return res.status(400).json({ error: 'Please provide a YouTube or TikTok link' });
   }
+  const tiktok = isTikTok(url);
   try {
     const info = await getVideoInfo(url);
     const formats = info.formats || [];
     const qualityMap = new Map();
     for (const f of formats) {
       if (!f.height || !f.vcodec || f.vcodec === 'none') continue;
+      // Skip TikTok's watermarked variants; keep the no-watermark "Direct video"
+      if (tiktok && /watermark/i.test(f.format_note || '')) continue;
       const key = f.height;
       const existing = qualityMap.get(key);
       if (!existing || (f.ext === 'mp4' && existing.ext !== 'mp4')) {
@@ -115,6 +142,7 @@ app.get('/api/download', async (req, res) => {
   const quality = req.query.quality;
   const audioOnly = req.query.audio === '1';
   if (!url) return res.status(400).json({ error: 'Missing ?url=' });
+  const tiktok = isTikTok(url);
 
   // OPTIMIZATION 1: Don't block download on getVideoInfo (was +3-5s delay).
   // Use cached title if available, else quick fallback and start immediately.
@@ -141,14 +169,32 @@ app.get('/api/download', async (req, res) => {
   // with different player clients on 403/SABR errors BEFORE any bytes are sent.
   const tmp = path.join(os.tmpdir(), `yt_${Date.now()}_${Math.random().toString(36).slice(2)}.${audioOnly ? 'mp3' : 'mp4'}`);
 
-  function buildArgs(client) {
-    const clientArg = client ? ['--extractor-args', `youtube:player_client=${client}`] : [];
+  function buildArgs(client, tiktok) {
+    // TikTok has combined (already-muxed) no-watermark formats; skip YouTube's
+    // player_client tweaks and the bestvideo+bestaudio merge logic.
+    const clientArg = (!tiktok && client) ? ['--extractor-args', `youtube:player_client=${client}`] : [];
+    if (tiktok) {
+      const h = (quality && quality !== 'best' && quality !== 'highest') ? parseInt(quality, 10) : null;
+      const sel = h ? `best[height<=${h}]/best` : 'best';
+      return [
+        ...clientArg,
+        '--user-agent', TIKTOK_USER_AGENT,
+        ...cookieArg(),
+        '-f', sel,
+        '--merge-output-format', 'mp4',
+        '--retries', '5', '--fragment-retries', '5',
+        '--no-playlist', '--no-warnings',
+        '-o', tmp, url
+      ];
+    }
     if (audioOnly) {
       return [
         ...clientArg,
+        ...cookieArg(),
         '-f', 'bestaudio[protocol*=m3u8]/bestaudio/best',
         '--extract-audio', '--audio-format', 'mp3', '--audio-quality', '0',
-        '--hls-prefer-native', '-N', '8', '--http-chunk-size', '10M',
+        '--hls-prefer-native', '-N', '16', '--http-chunk-size', '10M',
+        '--retries', '5', '--fragment-retries', '5',
         '--no-playlist', '--no-warnings',
         '-o', tmp, url
       ];
@@ -160,8 +206,10 @@ app.get('/api/download', async (req, res) => {
     const dashFallback = h ? `bv*[height<=${h}]+ba/bv*+ba/b` : `bv*+ba/b`;
     return [
       ...clientArg,
+      ...cookieArg(),
       '-f', `${m3u8Best}/${dashFallback}`,
-      '--hls-prefer-native', '-N', '8', '--http-chunk-size', '10M',
+      '--hls-prefer-native', '-N', '16', '--http-chunk-size', '10M',
+      '--retries', '5', '--fragment-retries', '5',
       '--merge-output-format', 'mp4',
       '--no-playlist', '--no-warnings',
       '-o', tmp, url
@@ -171,14 +219,15 @@ app.get('/api/download', async (req, res) => {
   console.log(`[download] ${audioOnly ? 'MP3' : quality || 'best'} <- ${url.slice(0,60)} -> ${filename}`);
   const t0 = Date.now();
 
-  const clients = [null, 'android', 'mweb', 'web'];
+  // YouTube needs client rotation to dodge SABR/403; TikTok just needs one pass.
+  const clients = tiktok ? [null] : [null, 'android', 'mweb', 'web'];
   let ci = 0;
 
   function cleanup() { try { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); } catch {} }
 
   function attempt() {
     const client = clients[ci];
-    const a = buildArgs(client);
+    const a = buildArgs(client, tiktok);
     console.log(`[download] attempt ${ci} client=${client || 'default'} <- ${url.slice(0, 50)}`);
     const ytdlp = spawn('yt-dlp', a);
     let stderrBuf = '';

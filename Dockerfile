@@ -15,7 +15,11 @@ WORKDIR /app
 # yt-dlp needs ffmpeg to mux/merge, and python3 to install yt-dlp via pip
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ffmpeg python3 python3-pip ca-certificates \
-    && pip3 install --no-cache-dir --break-system-packages yt-dlp \
+    # TikTok's web API changes often; the stable yt-dlp lags behind and breaks
+    # ("Unable to extract universal data for rehydration"). The nightly build
+    # tracks TikTok and includes the impersonation extra (curl_cffi) needed for
+    # its JS challenge.
+    && pip3 install --no-cache-dir --break-system-packages --pre "yt-dlp[impersonate]" \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

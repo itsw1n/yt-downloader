@@ -30,7 +30,12 @@ export function App() {
   function handleSubmit() {
     const trimmed = input.trim();
     if (!trimmed) return;
-    if (!trimmed.includes("youtube.com") && !trimmed.includes("youtu.be")) {
+    if (
+      !trimmed.includes("youtube.com") &&
+      !trimmed.includes("youtu.be") &&
+      !trimmed.includes("tiktok.com") &&
+      !/tiktok\./.test(trimmed)
+    ) {
       setInvalid(true);
       setUrl(null);
       return;
