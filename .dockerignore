@@ -7,3 +7,9 @@ npm-debug.log*
 .DS_Store
 superpowers
 docker-compose.override.yml
+
+# Secrets / sensitive mounts — never copy into the image
+.env
+.env.*
+cookies.txt
+*.cookies.txt

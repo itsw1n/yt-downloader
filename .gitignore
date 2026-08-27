@@ -4,3 +4,9 @@ npm-debug.log*
 *.log
 dist/
 .superpowers/
+
+# Secrets / sensitive mounts — never commit or image these
+.env
+.env.*
+cookies.txt
+*.cookies.txt
