@@ -1,4 +1,4 @@
-# YT Save — Self-hosted YouTube Downloader
+# SaveHub — Self-hosted YouTube & TikTok Downloader
 
 Paste link → Choose quality → Save to iPhone Gallery / Laptop Downloads → Use in CapCut
 
@@ -89,7 +89,7 @@ Keep the terminal open while you need it. (Free quick tunnels give a new random 
 ## 3. How to use (iPhone → CapCut)
 
 1. Copy YouTube link (Share → Copy link)
-2. Paste in YT Save → Tap Get Video → Pick 1080p (best for CapCut)
+2. Paste in SaveHub → Tap Get Video → Pick 1080p (best for CapCut)
 3. Video opens → Tap Share icon ↗ → Save Video
 4. Open CapCut → New Project → Video is in Gallery
 
@@ -103,9 +103,10 @@ Same site on laptop → Pick quality → File downloads to `Downloads/*.mp4` →
 - Qualities: 144p to 4K (whatever YouTube has) + MP3 audio
 - MP4 / H264 — CapCut compatible
 - Shorts supported
+- TikTok links supported — downloaded **without watermark** by default
 
 ## API
-- `GET /api/info?url=YOUTUBE_URL` → `{ title, thumbnail, qualities[], hasAudio }`
+- `GET /api/info?url=YOUTUBE_OR_TIKTOK_URL` → `{ title, thumbnail, qualities[], hasAudio }`
 - `GET /api/download?url=...&quality=1080` → streams MP4 attachment
 - `GET /api/download?url=...&audio=1` → streams MP3
 
@@ -114,3 +115,4 @@ Same site on laptop → Pick quality → File downloads to `Downloads/*.mp4` →
 - If a video fails: try updating yt-dlp; some age-restricted/private videos require auth.
 - Docker users: `yt-dlp` is pinned at build time — rebuild the image (`make run` / `docker compose build`) to get the latest version.
 - The optional `bgutil` service (POT provider) is included in `docker-compose.yml` but is not yet consumed by `server.js`.
+- **TikTok** downloads depend on `yt-dlp` nightly (already in the image) and can be **intermittently broken by TikTok-side changes** (a known global issue). A browser User-Agent is applied automatically as a workaround. If a video still fails with an IP/session block, export a TikTok cookie file and set `YTDLP_COOKIES` (see `docker-compose.yml`).
