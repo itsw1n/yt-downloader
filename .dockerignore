@@ -1,0 +1,9 @@
+node_modules
+dist
+npm-debug.log*
+*.log
+.git
+.gitignore
+.DS_Store
+superpowers
+docker-compose.override.yml
