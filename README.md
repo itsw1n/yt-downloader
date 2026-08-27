@@ -4,6 +4,8 @@ Paste link → Choose quality → Save to iPhone Gallery / Laptop Downloads → 
 
 No ads, no paywall. You own it.
 
+<img width="820" height="1076" alt="image" src="https://github.com/user-attachments/assets/6395c148-1990-4772-ab98-535667fadfba" />
+
 ---
 
 ## 1. Install
