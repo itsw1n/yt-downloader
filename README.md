@@ -8,6 +8,18 @@ No ads, no paywall. You own it.
 
 ## 1. Install
 
+### Option A — Docker (recommended, easiest)
+
+You only need **Docker** installed. No Node, no `yt-dlp`, no `ffmpeg` — they're baked into the image.
+
+```bash
+git clone <your-repo-url> yt-downloader
+cd yt-downloader
+make run          # builds the image and starts the app on :8787
+```
+
+### Option B — Run natively (Node)
+
 ```bash
 git clone <your-repo-url> yt-downloader
 cd yt-downloader
@@ -18,11 +30,25 @@ Requirements:
 - Node.js 18+
 - `yt-dlp` — install/update: `pip install -U yt-dlp`
   (or `sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && sudo chmod a+rx /usr/local/bin/yt-dlp`)
+- `ffmpeg` (for merging audio/video)
 
 ---
 
 ## 2. Run the server
 
+**Docker:**
+```bash
+make run          # build + start (http://localhost:8787)
+make stop         # stop containers
+make logs         # tail logs
+make status       # container + health status
+```
+Or with plain Docker Compose:
+```bash
+docker compose up -d --build
+```
+
+**Native:**
 ```bash
 npm start
 ```
@@ -48,6 +74,8 @@ ip addr | grep inet        # Linux
 Opens a tunnel so you can send the link to any phone without sharing WiFi:
 
 ```bash
+make tunnel       # Docker / Makefile setup
+# or, native:
 npm run tunnel
 ```
 
@@ -84,3 +112,5 @@ Same site on laptop → Pick quality → File downloads to `Downloads/*.mp4` →
 ## Notes
 - For personal use. Respect creators & YouTube ToS.
 - If a video fails: try updating yt-dlp; some age-restricted/private videos require auth.
+- Docker users: `yt-dlp` is pinned at build time — rebuild the image (`make run` / `docker compose build`) to get the latest version.
+- The optional `bgutil` service (POT provider) is included in `docker-compose.yml` but is not yet consumed by `server.js`.
