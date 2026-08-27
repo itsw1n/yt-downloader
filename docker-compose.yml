@@ -1,0 +1,28 @@
+services:
+  yt-downloader:
+    build: .
+    ports:
+      - "${PORT:-8787}:8787"
+    environment:
+      - PORT=8787
+      # Optional: path inside the container to a Netscape cookie file
+      # (mount it via the volumes below, then pass YTDLP_COOKIES at runtime).
+      # Helps when TikTok/YouTube block the server's IP.
+      - YTDLP_COOKIES=${YTDLP_COOKIES:-}
+    # volumes:
+    #   - ./cookies.txt:/app/cookies.txt:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8787/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Optional POT provider that helps yt-dlp bypass YouTube's anti-bot.
+  # NOTE: server.js does not currently consume this endpoint, but it is
+  # included for parity with the Makefile setup. Keep or remove as needed.
+  bgutil:
+    image: brainicism/bgutil-ytdlp-pot-provider
+    ports:
+      - "4416:4416"
+    restart: unless-stopped

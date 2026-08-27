@@ -27,7 +27,7 @@ export function UrlForm({ value, onChange, onSubmit, isLoading }: UrlFormProps) 
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Paste YouTube link here..."
+          placeholder="Paste YouTube or TikTok link here..."
           className={styles.inputWithIcon}
           onKeyDown={(e) => {
             if (e.key === 'Enter') onSubmit()
