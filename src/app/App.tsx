@@ -19,6 +19,11 @@ export function App() {
   const [invalid, setInvalid] = useState(false);
   const { data, isLoading, isError, error } = useVideoInfo(url);
 
+  const errText =
+    error instanceof Error
+      ? (error as unknown as { response?: { data?: { error?: string } } })?.response?.data?.error || error.message
+      : "Failed to fetch video";
+
   const status: Status = isLoading
     ? "loading"
     : isError
@@ -65,16 +70,14 @@ export function App() {
         />
         {invalid && (
           <StatusMessage status="error">
-            That doesn&apos;t look like a YouTube link
+            That doesn&apos;t look like a YouTube or TikTok link
           </StatusMessage>
         )}
         {status === "loading" && (
           <StatusMessage status="loading">Fetching video info...</StatusMessage>
         )}
         {status === "error" && (
-          <StatusMessage status="error">
-            {error instanceof Error ? error.message : "Failed to fetch video"}
-          </StatusMessage>
+          <StatusMessage status="error">{errText}</StatusMessage>
         )}
       </Card>
 

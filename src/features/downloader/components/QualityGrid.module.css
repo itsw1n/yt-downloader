@@ -87,3 +87,45 @@
   color: var(--color-muted-foreground);
   margin-bottom: 4px;
 }
+
+.best:disabled,
+.qBtn:disabled,
+.audioBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  animation: qg-spin 0.8s linear infinite;
+}
+
+@keyframes qg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progressWrap {
+  grid-column: 1 / -1;
+  margin-top: var(--space-1);
+  height: 8px;
+  border-radius: 999px;
+  background-color: var(--color-muted);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-primary), #ff6a00);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.error {
+  grid-column: 1 / -1;
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-destructive, #ef4444);
+}
