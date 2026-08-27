@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Youtube } from "lucide-react";
+import { Download } from "lucide-react";
 import { UrlForm } from "@/features/downloader/components/UrlForm";
 import { VideoResult } from "@/features/downloader/components/VideoResult";
 import { HowToSteps } from "@/features/downloader/components/HowToSteps";
@@ -53,8 +53,8 @@ export function App() {
     <div className={styles.app}>
       <header className={styles.header}>
         <div className={styles.logo}>
-          <Youtube className={styles.logoIcon} />
-          <h1 className={styles.logoText}>YT Save</h1>
+          <Download className={styles.logoIcon} />
+          <h1 className={styles.logoText}>SaveHub</h1>
         </div>
         <p className={styles.subtitle}>
           Paste link → Choose quality → Save to Gallery

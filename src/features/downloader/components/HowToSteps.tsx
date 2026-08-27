@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card/Card'
 import styles from './HowToSteps.module.css'
 
 const iphoneSteps = [
-  'Paste link from YouTube → Tap Get Video',
+  'Paste link from YouTube or TikTok → Tap Get Video',
   'Pick quality (1080p recommended for CapCut)',
   'Video opens → Tap Share icon ↗ → Save Video',
   'Open CapCut → New Project → Video is in your Gallery!',
